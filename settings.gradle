@@ -1,0 +1,6 @@
+rootProject.name = 'CertificateSystemSecurity'
+include 'api'
+include 'core'
+
+
+
