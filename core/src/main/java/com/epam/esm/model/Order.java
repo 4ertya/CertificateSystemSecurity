@@ -2,7 +2,6 @@ package com.epam.esm.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -14,7 +13,6 @@ import java.util.List;
 @Table(name = "orders")
 @Data
 @NoArgsConstructor
-@Audited
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "orders_seq")
@@ -30,6 +28,5 @@ public class Order {
             joinColumns = {@JoinColumn(name = "orders_id")},
             inverseJoinColumns = {@JoinColumn(name = "certificates_id")}
     )
-    @Audited
     private List<Certificate> certificates = new ArrayList<>();
 }

@@ -11,4 +11,8 @@ public interface UserRepository {
     User getUserById(long id);
 
     long getCount();
+
+    User getUserByEmail(String email);
+
+    User addUser(User user);
 }

@@ -21,12 +21,14 @@ subprojects {
     dependencies {
 
         implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.boot:spring-boot-starter-security'
         implementation 'org.springframework:spring-orm'
 
+        implementation 'io.jsonwebtoken:jjwt:0.9.1'
         implementation 'org.postgresql:postgresql'
         implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.4.5'
         implementation 'org.hibernate:hibernate-entitymanager:5.4.27.Final'
-        implementation 'org.hibernate:hibernate-envers:5.4.27.Final'
         implementation 'org.modelmapper:modelmapper:2.3.9'
         implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
         implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'

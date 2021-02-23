@@ -2,12 +2,17 @@ package com.epam.esm.controller;
 
 
 import com.epam.esm.dto.CertificateDto;
+import com.epam.esm.model.User;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.util.HateoasBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +27,7 @@ public class CertificateController {
     private final HateoasBuilder hateoasBuilder;
 
     @GetMapping
+    @PreAuthorize("USER")
     public RepresentationModel findAllCertificates(@RequestParam Map<String, String> params) {
         List<CertificateDto> certificates = certificateService.findCertificates(params);
         long certificatesCount = certificateService.getCount(params);
@@ -29,6 +35,7 @@ public class CertificateController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public RepresentationModel findCertificateById(@PathVariable long id) {
         CertificateDto certificate = certificateService.findCertificateById(id);
         return hateoasBuilder.addLinksForCertificate(certificate);

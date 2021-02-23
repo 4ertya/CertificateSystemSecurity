@@ -3,7 +3,6 @@ package com.epam.esm.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -14,7 +13,6 @@ import java.util.Set;
 @Entity
 @Table(name = "certificates")
 @Data
-@Audited
 @NoArgsConstructor
 public class Certificate {
     @Id
