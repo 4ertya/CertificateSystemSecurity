@@ -2,6 +2,7 @@ package com.epam.esm.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -15,18 +16,17 @@ import java.util.List;
 @NoArgsConstructor
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "orders_seq")
-    @SequenceGenerator(name="orders_seq",
-            sequenceName="orders_id_seq", allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_seq")
+    @SequenceGenerator(name = "orders_seq",
+            sequenceName = "orders_id_seq", allocationSize = 1)
     private Long id;
-    private Long userId;
     private LocalDateTime orderDate;
     private BigDecimal cost;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "orders_certificates",
-            joinColumns = {@JoinColumn(name = "orders_id")},
-            inverseJoinColumns = {@JoinColumn(name = "certificates_id")}
-    )
-    private List<Certificate> certificates = new ArrayList<>();
+    @OneToMany(mappedBy = "order")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<OrderedCertificate> certificates = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

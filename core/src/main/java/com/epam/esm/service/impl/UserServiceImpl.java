@@ -2,27 +2,29 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dto.RegistrationUserDto;
 import com.epam.esm.dto.UserDto;
-import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ExceptionCode;
+import com.epam.esm.exception.alreadyexist.UserAlreadyExistException;
+import com.epam.esm.exception.notfound.UserNotFoundException;
 import com.epam.esm.mapper.UserMapper;
 import com.epam.esm.model.Role;
 import com.epam.esm.model.User;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.security.JwtUser;
 import com.epam.esm.service.UserService;
+import com.epam.esm.validation.BasicValidator;
 import com.epam.esm.validation.PaginationValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,64 +37,94 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PaginationValidator paginationValidator;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final BasicValidator basicValidator;
 
     @Override
     public List<UserDto> getUsers(Map<String, String> params) {
         paginationValidator.validatePaginationParams(params);
-        long count = userRepository.getCount();
+        long count = userRepository.count();
         paginationValidator.validatePageNumber(params, count);
         List<UserDto> userDTOS = new ArrayList<>();
-        int limit = Integer.parseInt(params.get(SIZE_PARAM));
-        int offset = (Integer.parseInt(params.get(PAGE_PARAM)) - 1) * limit;
-        userRepository.getUsers(limit, offset).forEach(user -> userDTOS.add(userMapper.toDTO(user)));
+        int size = Integer.parseInt(params.get(SIZE_PARAM));
+        int page = Integer.parseInt(params.get(PAGE_PARAM));
+        Pageable pageable = PageRequest.of(page - 1, size);
+        userRepository.findAll(pageable).forEach(user -> userDTOS.add(userMapper.toDTO(user)));
         return userDTOS;
     }
 
     @Override
     public long getCount() {
-        return userRepository.getCount();
+        return userRepository.count();
     }
 
     @Override
-    public UserDto getUserById(long id) {
-        User user = userRepository.getUserById(id);
-        if (user == null) {
-            throw new EntityNotFoundException(ExceptionCode.NON_EXISTING_USER.getErrorCode(), String.valueOf(id));
+    public void deleteUser(long id) {
+        basicValidator.validateIdIsPositive(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException(ExceptionCode.NON_EXISTING_USER.getErrorCode(), String.valueOf(id))
+        );
+        userRepository.delete(user);
+    }
+
+    @Override
+    @Transactional
+    public UserDto changeRole(long id) {
+        basicValidator.validateIdIsPositive(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(ExceptionCode.NON_EXISTING_USER.getErrorCode()
+                , String.valueOf(id)));
+        if (user.getRole() == Role.ROLE_ADMIN) {
+            user.setRole(Role.ROLE_USER);
+        } else {
+            user.setRole(Role.ROLE_ADMIN);
         }
+        return userMapper.toDTO(user);
+    }
+
+
+    @Override
+    public UserDto getUserById(long id) {
+        basicValidator.validateIdIsPositive(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException(ExceptionCode.NON_EXISTING_USER.getErrorCode(), String.valueOf(id))
+        );
         return userMapper.toDTO(user);
     }
 
     @Override
     public UserDto addUser(RegistrationUserDto registerUserDto) {
-        User user = userRepository.getUserByEmail(registerUserDto.getEmail());
-        if (user != null) {
-            throw new EntityNotFoundException("12", "user already exist");
-        }
-        user = new User();
-        user.setName(registerUserDto.getName());
-        user.setSurname(registerUserDto.getSurname());
-        user.setEmail(registerUserDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
+        Optional<User> user =
+                userRepository.findByEmail(registerUserDto.getEmail());
 
-        userRepository.addUser(user);
-        return null;
+        if (user.isPresent()) {
+            throw new UserAlreadyExistException("20303", registerUserDto.getEmail());
+        }
+        User newUser = new User();
+        newUser.setName(registerUserDto.getName());
+        newUser.setSurname(registerUserDto.getSurname());
+        newUser.setEmail(registerUserDto.getEmail());
+        newUser.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
+        newUser.setRole(Role.ROLE_USER);
+
+        userRepository.save(newUser);
+        return userMapper.toDTO(newUser);
     }
 
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.getUserByEmail(email);
+        User user =
+                userRepository.findByEmail(email)
+                        .orElseThrow(() -> new UserNotFoundException(ExceptionCode.NON_EXISTING_USER.getErrorCode(),
+                                email));
         return new JwtUser(
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
-                mapRolesToAuthorities(user.getRoles())
+                mapRolesToAuthorities(user.getRole())
         );
     }
 
-    private List<GrantedAuthority> mapRolesToAuthorities(List<Role> userRoles) {
-        return userRoles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Role userRole) {
+        return Collections.singletonList(new SimpleGrantedAuthority(userRole.name()));
     }
 }

@@ -14,5 +14,9 @@ public interface OrderService {
 
     OrderDto getOrderById(long id);
 
+    List<OrderDto> getOrdersByUserId(long id,Map<String,String> params);
+
     long getCount(Map<String, String> params);
+
+    void deleteOrder(long id);
 }

@@ -2,20 +2,8 @@ package com.epam.esm.repository;
 
 
 import com.epam.esm.model.Certificate;
-import com.epam.esm.repository.specification.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import java.util.List;
-
-public interface CertificateRepository {
-
-    List<Certificate> findAllCertificates(List<Specification> specifications, int limit, int offset);
-
-    Certificate findCertificateById(long id);
-
-    Certificate createCertificate(Certificate certificate);
-
-    void deleteCertificate(Certificate certificate);
-
-    long getCount(List<Specification> specifications);
-
+public interface CertificateRepository extends JpaRepository<Certificate, Long>, JpaSpecificationExecutor<Certificate> {
 }

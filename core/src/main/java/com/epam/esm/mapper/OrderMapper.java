@@ -19,6 +19,8 @@ public class OrderMapper {
     }
 
     public OrderDto toDTO(Order model) {
-        return Objects.isNull(model) ? null : mapper.map(model, OrderDto.class);
+        OrderDto orderDto = Objects.isNull(model) ? null : mapper.map(model, OrderDto.class);
+        orderDto.setUserId(model.getUser().getId());
+        return orderDto;
     }
 }

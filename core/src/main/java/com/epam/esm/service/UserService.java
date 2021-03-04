@@ -19,4 +19,9 @@ public interface UserService extends UserDetailsService {
     UserDto addUser(RegistrationUserDto registerUserDto);
 
     long getCount();
+
+    void deleteUser(long id);
+
+
+    UserDto changeRole(long id);
 }

@@ -1,18 +1,10 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
-public interface UserRepository {
-
-    List<User> getUsers(int limit, int offset);
-
-    User getUserById(long id);
-
-    long getCount();
-
-    User getUserByEmail(String email);
-
-    User addUser(User user);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
 }

@@ -8,12 +8,16 @@ import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.dto.UserDto;
+import com.epam.esm.model.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -63,9 +67,9 @@ public class HateoasBuilder {
     }
 
     public CertificateDto addLinksForCertificate(CertificateDto certificateDto) {
-        certificateDto.getTags().forEach(tag -> tag.add(linkTo(methodOn(TagController.class)
-                .findTagById(tag.getId()))
-                .withSelfRel()));
+            certificateDto.getTags().forEach(tag -> tag.add(linkTo(methodOn(TagController.class)
+                    .findTagById(tag.getId()))
+                    .withSelfRel()));
         return certificateDto;
     }
 
@@ -93,8 +97,8 @@ public class HateoasBuilder {
     }
 
     public RepresentationModel<?> addLinksForListOfOrders(List<OrderDto> orders, Map<String, String> params, long ordersCount) {
-        orders.forEach(order -> order.add(linkTo(methodOn(OrderController.class)
-                .getOrderById(order.getId()))
+        orders.forEach(order -> order.add(linkTo(methodOn(UserController.class)
+                .getUserOrders(order.getId(),params))
                 .withSelfRel()));
         Map<String, Long> page = paginationPreparer.preparePageInfo(params, ordersCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
@@ -105,12 +109,11 @@ public class HateoasBuilder {
 
     public OrderDto addLinksForOrder(OrderDto orderDto) {
         orderDto.getCertificates().forEach(certificate -> certificate.add(linkTo(methodOn(CertificateController.class)
-                .findCertificateById(certificate.getId()))
+                .findCertificateById(certificate.getCertificateId()))
                 .withSelfRel()));
         Map<String, String> params = new HashMap<>();
-        params.put(Constant.USER_ID, String.valueOf(orderDto.getUserId()));
-        orderDto.add(linkTo(methodOn(OrderController.class)
-                .getAllOrders(params))
+        orderDto.add(linkTo(methodOn(UserController.class)
+                .getUserOrders(orderDto.getUserId(),new HashMap<>()))
                 .withRel(Constant.USERS_ORDERS));
         return orderDto;
     }

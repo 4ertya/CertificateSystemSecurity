@@ -44,7 +44,7 @@ public class PaginationPreparer {
         Map<String, Long> page = new HashMap<>();
         page.put(Constant.PAGES_NUMBER, pageCount);
         page.put(Constant.CURRENT_PAGE, (long) currentPage);
-        page.put(Constant.ELEMENT_PER_PAGE, Long.parseLong(params.get(Constant.SIZE)));
+        page.put(Constant.SIZE, Long.parseLong(params.get(Constant.SIZE)));
         page.put(Constant.TOTAL_NUMBER_OF_ELEMENTS, entityCount);
         return page;
     }
@@ -65,9 +65,8 @@ public class PaginationPreparer {
         private final static String NEXT_PAGE = "next page";
         private final static String PREVIOUS_PAGE = "previous page";
         private final static String LAST_PAGE = "last page";
-        private final static String PAGES_NUMBER = "number of pages";
-        private final static String CURRENT_PAGE = "current page";
-        private final static String ELEMENT_PER_PAGE = "elements per page";
-        private final static String TOTAL_NUMBER_OF_ELEMENTS = "total number of elements";
+        private final static String PAGES_NUMBER = "totalPages";
+        private final static String CURRENT_PAGE = "number";
+        private final static String TOTAL_NUMBER_OF_ELEMENTS = "totalElements";
     }
 }
