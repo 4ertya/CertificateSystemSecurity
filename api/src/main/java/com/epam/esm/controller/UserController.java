@@ -34,12 +34,13 @@ public class UserController {
         return hateoasBuilder.addLinksForListOfUsers(users,params,users.size());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public RepresentationModel getUserById(@PathVariable("id") long id) {
         UserDto userDTO = userService.getUserById(id);
         return hateoasBuilder.addLinksForUser(userDTO);
     }
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}/orders")
     public RepresentationModel getUserOrders(@PathVariable("id") long id, @RequestParam Map<String, String> params) {
         List<OrderDto> orders = orderService.getOrdersByUserId(id,params);

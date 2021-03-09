@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,13 +34,14 @@ public class TagController {
         return hateoasBuilder.addLinksForTagDTO(tagDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public TagDto createTag(@RequestBody TagDto tagDto) {
         TagDto tag = tagService.createTag(tagDto);
         return hateoasBuilder.addLinksForTagDTO(tag);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public TagDto updateTag(@PathVariable("id") long id, @RequestBody TagDto tagDto) {
         tagDto.setId(id);
@@ -47,13 +49,14 @@ public class TagController {
         return hateoasBuilder.addLinksForTagDTO(tag);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeTag(@PathVariable("id") long id) {
         tagService.deleteTag(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/most-used")
     public TagDto findMostUsedTag() {
         TagDto tag = tagService.getMostUsedTagOfUserWithHighestCostOfOrders();

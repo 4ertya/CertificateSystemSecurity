@@ -13,6 +13,7 @@ import com.epam.esm.security.JwtUser;
 import com.epam.esm.service.UserService;
 import com.epam.esm.validation.BasicValidator;
 import com.epam.esm.validation.PaginationValidator;
+import com.epam.esm.validation.SecurityValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final PaginationValidator paginationValidator;
     private final BCryptPasswordEncoder passwordEncoder;
     private final BasicValidator basicValidator;
+    private final SecurityValidator securityValidator;
 
     @Override
     public List<UserDto> getUsers(Map<String, String> params) {
@@ -83,6 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(long id) {
+        securityValidator.validateUserAccess(id);
         basicValidator.validateIdIsPositive(id);
         User user = userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException(ExceptionCode.NON_EXISTING_USER.getErrorCode(), String.valueOf(id))
@@ -96,7 +99,8 @@ public class UserServiceImpl implements UserService {
                 userRepository.findByEmail(registerUserDto.getEmail());
 
         if (user.isPresent()) {
-            throw new UserAlreadyExistException("20303", registerUserDto.getEmail());
+            throw new UserAlreadyExistException(ExceptionCode.USER_ALREADY_EXIST.getErrorCode(),
+                    registerUserDto.getEmail());
         }
         User newUser = new User();
         newUser.setName(registerUserDto.getName());

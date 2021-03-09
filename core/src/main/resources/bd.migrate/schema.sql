@@ -7,7 +7,7 @@ create sequence ordered_certificates_id_seq;
 
 create table certificates
 (
-    id               bigint not null DEFAULT nextval(certificates_id_seq),
+    id               bigint not null DEFAULT nextval('certificates_id_seq'),
     create_date      timestamp with time zone,
     description      varchar(255),
     duration         integer,
@@ -20,7 +20,7 @@ create table certificates
 
 create table tags
 (
-    id   bigint not null DEFAULT nextval(tags_id_seq),
+    id   bigint not null DEFAULT nextval('tags_id_seq'),
     name varchar(255),
     constraint tags_pkey
         primary key (id),
@@ -30,7 +30,7 @@ create table tags
 
 create table users
 (
-    id      bigint not null DEFAULT nextval(users_id_seq),
+    id      bigint not null DEFAULT nextval('users_id_seq'),
     email    varchar(255) not null,
     name     varchar(255) not null,
     password varchar(255) not null,
@@ -43,7 +43,7 @@ create table users
 
 create table orders
 (
-    id         bigint not null DEFAULT nextval(orders_id_seq),
+    id         bigint not null DEFAULT nextval('orders_id_seq'),
     cost       numeric(19, 2),
     order_date timestamp,
     user_id    bigint,
@@ -55,7 +55,7 @@ create table orders
 
 create table ordered_certificates
 (
-    id             bigint not null DEFAULT nextval(ordered_certificates_id_seq),
+    id             bigint not null DEFAULT nextval('ordered_certificates_id_seq'),
     certificate_id bigint,
     description    varchar(255),
     duration       integer,

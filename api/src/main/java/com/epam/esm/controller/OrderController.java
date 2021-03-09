@@ -7,7 +7,6 @@ import com.epam.esm.util.HateoasBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,7 @@ public class OrderController {
     private final OrderService orderService;
     private final HateoasBuilder hateoasBuilder;
 
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDto createOrder(@RequestBody NewOrderDto newOrderDto) {
@@ -30,7 +29,7 @@ public class OrderController {
         return hateoasBuilder.addLinksForOrder(orderDTO);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public RepresentationModel getAllOrders(@RequestParam Map<String, String> params) {
         List<OrderDto> orders = orderService.getOrders(params);
@@ -38,6 +37,7 @@ public class OrderController {
         return hateoasBuilder.addLinksForListOfOrders(orders, params, ordersCount);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public OrderDto getOrderById(@PathVariable("id") long id) {
         OrderDto orderDTO = orderService.getOrderById(id);

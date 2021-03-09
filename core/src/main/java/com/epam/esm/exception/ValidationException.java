@@ -2,7 +2,7 @@ package com.epam.esm.exception;
 
 public class ValidationException extends RuntimeException {
 
-    private String description;
+    private final String description;
 
     public ValidationException(String message, String description) {
         super(message);

@@ -98,7 +98,7 @@ public class HateoasBuilder {
 
     public RepresentationModel<?> addLinksForListOfOrders(List<OrderDto> orders, Map<String, String> params, long ordersCount) {
         orders.forEach(order -> order.add(linkTo(methodOn(UserController.class)
-                .getUserOrders(order.getId(),params))
+                .getUserOrders(order.getUserId(),params))
                 .withSelfRel()));
         Map<String, Long> page = paginationPreparer.preparePageInfo(params, ordersCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(

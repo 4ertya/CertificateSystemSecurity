@@ -11,6 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -25,28 +26,33 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 @Slf4j
 public class AppExceptionHandler {
-
+    private final static String BAD_CREDENTIALS = "BadCredentialsException";
     private final MessageSource messageSource;
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException e,
-                                                                          HttpServletRequest request) {
-        String localizedMessage = messageSource.getMessage(
-                e.getMessage(), new Object[]{}, request.getLocale());
+                                                                         HttpServletRequest request,
+                                                                         Authentication authentication) {
+        String errorCode = ExceptionCode.ACCESS_IS_DENIED.getErrorCode();
+        if (authentication == null) {
+            errorCode = ExceptionCode.UNAUTHORIZED.getErrorCode();
+        }
 
-        ExceptionResponse response = new ExceptionResponse(e.getMessage(), e.getClass().getSimpleName(),
+
+        String localizedMessage = messageSource.getMessage(
+                errorCode, new Object[]{}, request.getLocale());
+
+        ExceptionResponse response = new ExceptionResponse(errorCode, e.getClass().getSimpleName(),
                 localizedMessage, request.getServletPath());
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({BadCredentialsException.class, InternalAuthenticationServiceException.class})
-    public ResponseEntity<ExceptionResponse> handleBadCredentialException(Exception e,
-                                                                           HttpServletRequest request) {
-        log.error(e.getMessage(), e);
-        String localizedMessage = messageSource.getMessage(
-                "40000", new Object[]{}, request.getLocale());
+    public ResponseEntity<ExceptionResponse> handleBadCredentialException(HttpServletRequest request) {
+        String errorCode = ExceptionCode.INVALID_USERNAME_OR_PASSWORD.getErrorCode();
+        String localizedMessage = messageSource.getMessage(errorCode, new Object[]{}, request.getLocale());
 
-        ExceptionResponse response = new ExceptionResponse("40000", "BadCredentialsException",
+        ExceptionResponse response = new ExceptionResponse(errorCode, BAD_CREDENTIALS,
                 localizedMessage, request.getServletPath());
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
@@ -76,7 +82,7 @@ public class AppExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistException.class)
     public ResponseEntity<ExceptionResponse> handleUserAlreadyExistException(UserAlreadyExistException e,
-                                                                           HttpServletRequest request) {
+                                                                             HttpServletRequest request) {
         String localizedMessage = messageSource.getMessage(
                 e.getMessage(), new Object[]{e.getEmail()}, request.getLocale());
         ExceptionResponse response = new ExceptionResponse(e.getMessage(), e.getClass().getSimpleName(),
@@ -97,9 +103,10 @@ public class AppExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ExceptionResponse> handleMediaTypeException(HttpMediaTypeNotSupportedException e,
                                                                       HttpServletRequest request) {
+        String errorCode = ExceptionCode.INVALID_MEDIA_TYPE.getErrorCode();
         String errorMessage = messageSource.getMessage(
-                "50101", new Object[]{}, request.getLocale());
-        ExceptionResponse response = new ExceptionResponse("50101", e.getClass().getSimpleName(),
+                errorCode, new Object[]{}, request.getLocale());
+        ExceptionResponse response = new ExceptionResponse(errorCode, e.getClass().getSimpleName(),
                 errorMessage, request.getServletPath());
         return new ResponseEntity<>(response, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
@@ -107,18 +114,20 @@ public class AppExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ExceptionResponse> handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException e, WebRequest wr) {
+        String errorCode = ExceptionCode.INVALID_URL_REQUEST.getErrorCode();
         String errorMessage = messageSource.getMessage(
-                "50103", new Object[]{}, wr.getLocale());
-        ExceptionResponse response = new ExceptionResponse("50103", e.getClass().getSimpleName(), errorMessage);
+                errorCode, new Object[]{}, wr.getLocale());
+        ExceptionResponse response = new ExceptionResponse(errorCode, e.getClass().getSimpleName(), errorMessage);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ExceptionResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e,
                                                                                    HttpServletRequest request) {
+        String errorCode = ExceptionCode.INVALID_DATA_TYPES_PASSED.getErrorCode();
         String errorMessage = messageSource.getMessage(
-                "50104", new Object[]{}, request.getLocale());
-        ExceptionResponse response = new ExceptionResponse("50104", e.getClass().getSimpleName(), errorMessage,
+                errorCode, new Object[]{}, request.getLocale());
+        ExceptionResponse response = new ExceptionResponse(errorCode, e.getClass().getSimpleName(), errorMessage,
                 request.getServletPath());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -126,9 +135,10 @@ public class AppExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ExceptionResponse> handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+        String errorCode = ExceptionCode.METHOD_NOT_ALLOWED.getErrorCode();
         String errorMessage = messageSource.getMessage(
-                "50105", new Object[]{}, request.getLocale());
-        ExceptionResponse response = new ExceptionResponse("50105", e.getClass().getSimpleName(), errorMessage,
+                errorCode, new Object[]{}, request.getLocale());
+        ExceptionResponse response = new ExceptionResponse(errorCode, e.getClass().getSimpleName(), errorMessage,
                 request.getServletPath());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -136,10 +146,11 @@ public class AppExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ExceptionResponse> handleThrowable(
             Throwable e, HttpServletRequest request) {
+        String errorCode = ExceptionCode.THROWABLE.getErrorCode();
         log.error(e.getMessage(), e);
         String errorMessage = messageSource.getMessage(
-                "5000", new Object[]{}, request.getLocale());
-        ExceptionResponse response = new ExceptionResponse("5000", e.getClass().getSimpleName(), errorMessage,
+                errorCode, new Object[]{}, request.getLocale());
+        ExceptionResponse response = new ExceptionResponse(errorCode, e.getClass().getSimpleName(), errorMessage,
                 request.getServletPath());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
