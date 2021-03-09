@@ -88,10 +88,9 @@ public class HateoasBuilder {
         userDto.add(linkTo(methodOn(UserController.class)
                 .getUserById(userDto.getId()))
                 .withSelfRel());
-        Map<String, String> params = new HashMap<>();
-        params.put(Constant.USER_ID, String.valueOf(userDto.getId()));
-        userDto.add(linkTo(methodOn(OrderController.class)
-                .getAllOrders(params))
+        Map<String,String> params = new HashMap<>();
+        userDto.add(linkTo(methodOn(UserController.class)
+                .getUserOrders(userDto.getId(),params))
                 .withRel(Constant.ORDERS));
         return userDto;
     }

@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.dto.UserDto;
-import com.epam.esm.model.Order;
+import com.epam.esm.model.Role;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.util.HateoasBuilder;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +54,13 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+
+    @GetMapping("/{id}/role")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String getUserRole(@PathVariable long id) {
+        Role role = userService.getUserRole(id);
+        return role.name();
+    }
 
     @PatchMapping("/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")

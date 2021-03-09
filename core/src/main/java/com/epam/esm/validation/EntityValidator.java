@@ -2,6 +2,7 @@ package com.epam.esm.validation;
 
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.dto.NewOrderDto;
+import com.epam.esm.dto.RegistrationUserDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.exception.ExceptionCode;
 import com.epam.esm.exception.ValidationException;
@@ -73,6 +74,31 @@ public class EntityValidator {
         }
     }
 
+    public void validateEmail(String email){
+        if (!email.matches("^\\w*@\\w*\\.[a-z]*$")){
+            throw new ValidationException(
+                    ExceptionCode.INVALID_EMAIL.getErrorCode(),
+                    Constant.EMAIL_FIELD+ Constant.EQUAL_SIGN + email);
+        }
+    }
+
+    public void validateName(String name){
+        if (!name.matches("^[A-ZА-Яa-zа-я]*$")){
+            throw new ValidationException(
+                    ExceptionCode.INVALID_NAME.getErrorCode(),
+                    Constant.NAME_FIELD+ Constant.EQUAL_SIGN + name);
+        }
+    }
+
+    public void validateSurname(String name){
+        if (!name.matches("^[A-ZА-Яa-zа-я-]*$")){
+            throw new ValidationException(
+                    ExceptionCode.INVALID_SURNAME.getErrorCode(),
+                    Constant.SURNAME_FIELD+ Constant.EQUAL_SIGN + name);
+        }
+    }
+
+
     public void validateOrder(NewOrderDto newOrderDto) {
         basicValidator.validateNonNull(newOrderDto.getUserId(), Constant.USER_ID);
         basicValidator.validateNonNull(newOrderDto.getCertificatesId(), Constant.CERTIFICATES_ID);
@@ -82,9 +108,22 @@ public class EntityValidator {
         }
     }
 
+    public void validateRegistrationUser(RegistrationUserDto registrationUserDto){
+        basicValidator.validateNonNull(registrationUserDto.getName(), Constant.NAME_FIELD);
+        basicValidator.validateNonNull(registrationUserDto.getSurname(),Constant.SURNAME_FIELD);
+        basicValidator.validateNonNull(registrationUserDto.getEmail(),Constant.EMAIL_FIELD);
+        basicValidator.validateNonNull(registrationUserDto.getPassword(),Constant.PASSWORD_FIELD);
+        validateEmail(registrationUserDto.getEmail());
+        validateName(registrationUserDto.getName());
+        validateSurname(registrationUserDto.getSurname());
+    }
+
 
     private static class Constant {
         private static final String NAME_FIELD = "name";
+        private static final String SURNAME_FIELD = "surname";
+        private static final String EMAIL_FIELD = "email";
+        private static final String PASSWORD_FIELD = "password";
         private static final String DESCRIPTION_FIELD = "description";
         private static final String TAGS_FIELD = "tags";
         private static final String DURATION_FIELD = "duration";

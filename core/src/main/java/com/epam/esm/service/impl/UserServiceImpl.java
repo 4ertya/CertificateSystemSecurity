@@ -12,6 +12,7 @@ import com.epam.esm.repository.UserRepository;
 import com.epam.esm.security.JwtUser;
 import com.epam.esm.service.UserService;
 import com.epam.esm.validation.BasicValidator;
+import com.epam.esm.validation.EntityValidator;
 import com.epam.esm.validation.PaginationValidator;
 import com.epam.esm.validation.SecurityValidator;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final BasicValidator basicValidator;
     private final SecurityValidator securityValidator;
+    private final EntityValidator entityValidator;
 
     @Override
     public List<UserDto> getUsers(Map<String, String> params) {
@@ -95,6 +97,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto addUser(RegistrationUserDto registerUserDto) {
+        entityValidator.validateRegistrationUser(registerUserDto);
         Optional<User> user =
                 userRepository.findByEmail(registerUserDto.getEmail());
 
@@ -113,6 +116,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDTO(newUser);
     }
 
+    @Override
+    public Role getUserRole(long id){
+        basicValidator.validateIdIsPositive(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException(ExceptionCode.NON_EXISTING_USER.getErrorCode(), String.valueOf(id))
+        );
+        return user.getRole();
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
