@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Role getUserRole(long id){
+    public Role getUserRole(long id) {
         basicValidator.validateIdIsPositive(id);
         User user = userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException(ExceptionCode.NON_EXISTING_USER.getErrorCode(), String.valueOf(id))

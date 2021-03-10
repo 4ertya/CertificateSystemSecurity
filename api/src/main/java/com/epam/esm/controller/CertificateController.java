@@ -23,10 +23,10 @@ public class CertificateController {
     private final HateoasBuilder hateoasBuilder;
 
     @GetMapping
-
     public RepresentationModel findAllCertificates(@RequestParam Map<String, String> params) {
         List<CertificateDto> certificates = certificateService.findCertificates(params);
-        return hateoasBuilder.addLinksForListOfCertificates(certificates, params, certificates.size());
+        long count = certificateService.getCount(params);
+        return hateoasBuilder.addLinksForListOfCertificates(certificates, params, count);
     }
 
     @GetMapping("/{id}")

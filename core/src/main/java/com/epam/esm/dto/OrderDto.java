@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Relation(itemRelation = "order", collectionRelation = "orders")

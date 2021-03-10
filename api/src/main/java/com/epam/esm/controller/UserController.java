@@ -30,7 +30,8 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public RepresentationModel getUsers(@RequestParam Map<String, String> params) {
         List<UserDto> users = userService.getUsers(params);
-        return hateoasBuilder.addLinksForListOfUsers(users,params,users.size());
+        long count = userService.getCount();
+        return hateoasBuilder.addLinksForListOfUsers(users, params, count);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
@@ -39,11 +40,12 @@ public class UserController {
         UserDto userDTO = userService.getUserById(id);
         return hateoasBuilder.addLinksForUser(userDTO);
     }
+
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}/orders")
     public RepresentationModel getUserOrders(@PathVariable("id") long id, @RequestParam Map<String, String> params) {
-        List<OrderDto> orders = orderService.getOrdersByUserId(id,params);
-        return hateoasBuilder.addLinksForListOfOrders(orders,params,orders.size());
+        List<OrderDto> orders = orderService.getOrdersByUserId(id, params);
+        return hateoasBuilder.addLinksForListOfOrders(orders, params, orders.size());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

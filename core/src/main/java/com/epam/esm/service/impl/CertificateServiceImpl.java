@@ -65,7 +65,7 @@ public class CertificateServiceImpl implements CertificateService {
         basicValidator.validateIdIsPositive(id);
         Certificate certificate =
                 certificateRepository.findById(id).orElseThrow(() -> new CertificateNotFoundException(ExceptionCode.NON_EXISTING_CERTIFICATE.getErrorCode(),
-                String.valueOf(id)));
+                        String.valueOf(id)));
         return certificateMapper.toDTO(certificate);
     }
 

@@ -41,6 +41,7 @@ public class TagController {
         TagDto tag = tagService.createTag(tagDto);
         return hateoasBuilder.addLinksForTagDTO(tag);
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public TagDto updateTag(@PathVariable("id") long id, @RequestBody TagDto tagDto) {
@@ -56,6 +57,7 @@ public class TagController {
         tagService.deleteTag(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/most-used")
     public TagDto findMostUsedTag() {

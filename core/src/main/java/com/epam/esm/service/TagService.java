@@ -7,10 +7,16 @@ import java.util.Map;
 
 public interface TagService {
     TagDto createTag(TagDto tagDto);
+
     List<TagDto> findAllTags(Map<String, String> params);
+
     TagDto findTagById(long id);
+
     void deleteTag(long id);
+
     TagDto updateTag(TagDto tag);
+
     long getCount();
+
     TagDto getMostUsedTagOfUserWithHighestCostOfOrders();
 }

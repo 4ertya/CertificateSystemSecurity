@@ -1,11 +1,8 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dto.AuthenticationRequestDto;
 import com.epam.esm.dto.RegistrationUserDto;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.model.Role;
-import com.epam.esm.model.User;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;

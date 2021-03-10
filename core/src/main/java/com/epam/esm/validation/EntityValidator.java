@@ -59,7 +59,7 @@ public class EntityValidator {
     }
 
     public void validateDuration(Integer duration) {
-        if (duration ==null){
+        if (duration == null) {
             throw new ValidationException(ExceptionCode.CANNOT_BE_NULL.getErrorCode(), Constant.DURATION_FIELD);
         }
         if (duration <= 0) {
@@ -74,27 +74,27 @@ public class EntityValidator {
         }
     }
 
-    public void validateEmail(String email){
-        if (!email.matches("^\\w*@\\w*\\.[a-z]*$")){
+    public void validateEmail(String email) {
+        if (!email.matches("^\\w*@\\w*\\.[a-z]*$")) {
             throw new ValidationException(
                     ExceptionCode.INVALID_EMAIL.getErrorCode(),
-                    Constant.EMAIL_FIELD+ Constant.EQUAL_SIGN + email);
+                    Constant.EMAIL_FIELD + Constant.EQUAL_SIGN + email);
         }
     }
 
-    public void validateName(String name){
-        if (!name.matches("^[A-ZА-Яa-zа-я]*$")){
+    public void validateName(String name) {
+        if (!name.matches("^[A-ZА-Яa-zа-я]*$")) {
             throw new ValidationException(
                     ExceptionCode.INVALID_NAME.getErrorCode(),
-                    Constant.NAME_FIELD+ Constant.EQUAL_SIGN + name);
+                    Constant.NAME_FIELD + Constant.EQUAL_SIGN + name);
         }
     }
 
-    public void validateSurname(String name){
-        if (!name.matches("^[A-ZА-Яa-zа-я-]*$")){
+    public void validateSurname(String name) {
+        if (!name.matches("^[A-ZА-Яa-zа-я-]*$")) {
             throw new ValidationException(
                     ExceptionCode.INVALID_SURNAME.getErrorCode(),
-                    Constant.SURNAME_FIELD+ Constant.EQUAL_SIGN + name);
+                    Constant.SURNAME_FIELD + Constant.EQUAL_SIGN + name);
         }
     }
 
@@ -108,11 +108,11 @@ public class EntityValidator {
         }
     }
 
-    public void validateRegistrationUser(RegistrationUserDto registrationUserDto){
+    public void validateRegistrationUser(RegistrationUserDto registrationUserDto) {
         basicValidator.validateNonNull(registrationUserDto.getName(), Constant.NAME_FIELD);
-        basicValidator.validateNonNull(registrationUserDto.getSurname(),Constant.SURNAME_FIELD);
-        basicValidator.validateNonNull(registrationUserDto.getEmail(),Constant.EMAIL_FIELD);
-        basicValidator.validateNonNull(registrationUserDto.getPassword(),Constant.PASSWORD_FIELD);
+        basicValidator.validateNonNull(registrationUserDto.getSurname(), Constant.SURNAME_FIELD);
+        basicValidator.validateNonNull(registrationUserDto.getEmail(), Constant.EMAIL_FIELD);
+        basicValidator.validateNonNull(registrationUserDto.getPassword(), Constant.PASSWORD_FIELD);
         validateEmail(registrationUserDto.getEmail());
         validateName(registrationUserDto.getName());
         validateSurname(registrationUserDto.getSurname());
