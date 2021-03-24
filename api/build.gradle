@@ -1,6 +1,14 @@
+apply plugin: "war"
+
 dependencies {
     implementation project(":core")
 }
+
 bootJar{
     archiveFileName  = 'apiBootJar.jar'
+}
+
+war {
+    enabled = true
+    finalizedBy jar
 }
