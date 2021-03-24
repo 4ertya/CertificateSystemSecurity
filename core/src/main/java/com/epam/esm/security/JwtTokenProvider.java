@@ -36,11 +36,11 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String username) {
+    public String createToken(String email) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime validity = now.plusMinutes(expirationInMinutes);
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
                 .setExpiration(Date.from(validity.atZone(ZoneId.systemDefault()).toInstant()))
                 .signWith(SignatureAlgorithm.HS256, secretKey)

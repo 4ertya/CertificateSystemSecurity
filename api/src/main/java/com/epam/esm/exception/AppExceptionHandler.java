@@ -34,8 +34,10 @@ public class AppExceptionHandler {
                                                                          HttpServletRequest request,
                                                                          Authentication authentication) {
         String errorCode = ExceptionCode.ACCESS_IS_DENIED.getErrorCode();
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
         if (authentication == null) {
             errorCode = ExceptionCode.UNAUTHORIZED.getErrorCode();
+            httpStatus = HttpStatus.UNAUTHORIZED;
         }
 
 
@@ -44,7 +46,7 @@ public class AppExceptionHandler {
 
         ExceptionResponse response = new ExceptionResponse(errorCode, e.getClass().getSimpleName(),
                 localizedMessage, request.getServletPath());
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     @ExceptionHandler({BadCredentialsException.class, InternalAuthenticationServiceException.class})

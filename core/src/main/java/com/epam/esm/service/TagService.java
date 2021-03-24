@@ -18,5 +18,5 @@ public interface TagService {
 
     long getCount();
 
-    TagDto getMostUsedTagOfUserWithHighestCostOfOrders();
+    List<TagDto> getMostUsedTagOfUserWithHighestCostOfOrders();
 }

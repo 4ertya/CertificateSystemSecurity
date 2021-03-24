@@ -40,6 +40,15 @@ public class HateoasBuilder {
         return buildModel(collectionModel, links, page);
     }
 
+    public RepresentationModel<?> addLinksForListOfTagDTOsWithoutPagination(List<TagDto> tags) {
+        tags.forEach(tagDTO -> tagDTO.add(linkTo(methodOn(TagController.class)
+                .findTagById(tagDTO.getId()))
+                .withSelfRel()));
+
+        CollectionModel<TagDto> collectionModel = CollectionModel.of(tags);
+        return collectionModel;
+    }
+
     public TagDto addLinksForTagDTO(TagDto tagDTO) {
         tagDTO.add(linkTo(methodOn(TagController.class)
                 .findTagById(tagDTO.getId()))
@@ -92,9 +101,14 @@ public class HateoasBuilder {
     }
 
     public RepresentationModel<?> addLinksForListOfOrders(List<OrderDto> orders, Map<String, String> params, long ordersCount) {
-        orders.forEach(order -> order.add(linkTo(methodOn(UserController.class)
-                .getUserOrders(order.getUserId(), params))
-                .withSelfRel()));
+        orders.forEach(order -> {
+            order.add(linkTo(methodOn(UserController.class)
+                    .getUserOrders(order.getUserId(), params))
+                    .withRel(Constant.USERS_ORDERS));
+            order.add(linkTo(methodOn(OrderController.class)
+            .getOrderById(order.getId()))
+            .withSelfRel());
+        });
         Map<String, Long> page = paginationPreparer.preparePageInfo(params, ordersCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
                 methodOn(OrderController.class).getAllOrders(params), params, ordersCount);

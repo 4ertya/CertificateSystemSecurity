@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,9 +61,11 @@ public class TagController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/most-used")
-    public TagDto findMostUsedTag() {
-        TagDto tag = tagService.getMostUsedTagOfUserWithHighestCostOfOrders();
-        return hateoasBuilder.addLinksForTagDTO(tag);
+    public RepresentationModel findMostUsedTag() {
+
+        List<TagDto> tags = tagService.getMostUsedTagOfUserWithHighestCostOfOrders();
+
+        return hateoasBuilder.addLinksForListOfTagDTOsWithoutPagination(tags);
     }
 
 }

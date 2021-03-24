@@ -100,7 +100,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto getMostUsedTagOfUserWithHighestCostOfOrders() {
-        return tagMapper.toDTO(tagRepository.getMostUsedTagOfUserWithHighestCostOfOrders());
+    public List<TagDto> getMostUsedTagOfUserWithHighestCostOfOrders() {
+        return tagRepository.getMostUsedTagOfUserWithHighestCostOfOrders()
+                .stream()
+                .map(tagMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
