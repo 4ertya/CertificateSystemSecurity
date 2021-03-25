@@ -10,5 +10,4 @@ bootJar{
 
 war {
     enabled = true
-    finalizedBy jar
 }
