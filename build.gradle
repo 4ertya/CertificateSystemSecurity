@@ -3,6 +3,14 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
+allprojects {
+    apply plugin: 'jacoco'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
 subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
@@ -40,9 +48,26 @@ subprojects {
 
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+
     }
 
     test {
         useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+}
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    reports {
+        xml.enabled false
+        html.enabled true
+        csv.enabled false
     }
 }
+
+codeCoverageReport.dependsOn {
+    subprojects.test
+}
+
