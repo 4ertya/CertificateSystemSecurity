@@ -1,6 +1,8 @@
 plugins {
     id 'org.springframework.boot' version '2.4.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "org.sonarqube" version "3.0"
+
 }
 
 allprojects {
@@ -57,17 +59,26 @@ subprojects {
     }
 
 }
+
 task codeCoverageReport(type: JacocoReport) {
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
     reports {
-        xml.enabled false
-        html.enabled true
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+        html.enabled false
         csv.enabled false
     }
 }
 
 codeCoverageReport.dependsOn {
     subprojects.test
+}
+
+sonarqube {
+    properties {
+        property('sonar.login', '73b83f0a1c498a7fe74f74eb9086ec8cd8b42b5b')
+        property('sonar.coverage.jacoco.xmlReportPaths', "${buildDir}/reports/jacoco/report.xml")
+    }
 }
 
