@@ -9,18 +9,17 @@ pipeline {
         stage("Build & Tests") {
             steps {
                 script {
-                       sh './gradlew clean build codeCoverageReport'
+                       bat './gradlew clean build codeCoverageReport'
                 }
             }
         }
-        stage("SonarQube analysis") {
+        stage("SonarQube") {
             environment {
                 scannerHome = tool 'sonarqube'
             }
             steps {
                 withSonarQubeEnv('LocalSonar') {
                     bat "\"${scannerHome}\\bin\\sonar-scanner.bat\""
-                    //-Dsonar.buildbreaker.skip=true"
                 }
             }
         }
