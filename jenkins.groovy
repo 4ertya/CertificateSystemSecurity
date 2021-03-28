@@ -5,11 +5,16 @@ pipeline {
     agent any
 
     stages {
+        stage("Checkout") {
+            steps {
+                git branch: 'jenkins', changelog: true, poll: true, url: 'https://github.com/4ertya/CertificateSystemSecurity.git/'
+            }
+        }
 
         stage("Build & Tests") {
             steps {
                 script {
-                       bat './gradlew clean build codeCoverageReport'
+                    bat './gradlew clean build codeCoverageReport'
                 }
             }
         }
@@ -30,20 +35,6 @@ pipeline {
                         path: '', url: 'http://localhost:8088/')],
                         contextPath: '', onFailure: false, war: '**/*.war'
             }
-        }
-    }
-    post {
-        always {
-            echo 'Build is completed'
-        }
-        success {
-            echo 'Build is successful'
-        }
-        failure {
-            echo 'Build is failed'
-        }
-        changed {
-            echo 'The state of the Pipeline has changed'
         }
     }
 }
